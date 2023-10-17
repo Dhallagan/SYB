@@ -1,0 +1,35 @@
+APP FUNCTIONALITY
+
+TRIP LOAD
+    - After trip purchase, the system will load the user into the authentication database powered by Google Firebase.
+        - Firebase will have a scheduled cloud function that will ping EASOL for email, phone number, IG, trip product, first name, last name.
+        - If EMAIL NOT EXISTS insert into Firebase Auth.
+FIRST TIME USER ACCESS
+    - The user will download the SYB app on the their device. 
+    - We can use email link sign in OR we can have them use a temporary password.
+    ONBOARDING
+    - We will need a profile photo.
+        - This will be used for the trip facebook.
+        - Ask to Enable Notifcations.
+
+
+HOME SCREEN
+    - Show important trip info
+        - What you need to do before the trip starts:
+            - Trip Waiver
+            - Trip Clothes
+            - Link to PDF of Guide
+        - Widgets: 
+            - HTML blog style - show pictures and itinerary of the day.   
+            - EVENTS of the Day
+            - New Photo Uploads
+ITINERARY SCREEN
+    - Show the times and places you need to be, and a blurb of what's going on.
+        - Whens the theme party.
+        - Whens yoga. 
+        - When is the run.
+
+PROFILE SCREEN
+    - Link to IG
+    - Where you are from
+    - Avatar and change photo. Upload 

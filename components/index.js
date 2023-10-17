@@ -5,6 +5,8 @@ import { Icon } from './Icon';
 import { Button } from './Button';
 import { FormErrorMessage } from './FormErrorMessage';
 import { LoadingIndicator } from './LoadingIndicator';
+import { CustomHeader } from './CustomHeader';
+import { Section } from './Section';
 
 export {
   View,
@@ -13,5 +15,7 @@ export {
   Icon,
   Button,
   FormErrorMessage,
-  LoadingIndicator
+  LoadingIndicator,
+  CustomHeader,
+  Section
 };

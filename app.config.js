@@ -2,24 +2,28 @@ import 'dotenv/config';
 
 export default {
   expo: {
-    name: 'Expo Firebase Starter',
-    slug: 'expo-firebase',
+    name: 'SurfYogaBeer',
+    slug: 'surfyogabeer',
     privacy: 'public',
     platforms: ['ios', 'android'],
     version: '0.15.0',
     orientation: 'portrait',
-    icon: './assets/flame.png',
+    icon: './assets/SYB_Logo.jpeg',
     splash: {
-      image: './assets/splash.png',
-      resizeMode: 'cover',
-      backgroundColor: '#F57C00'
+      image: './assets/SYB_Logo.jpeg',
+      resizeMode: 'contain',
+      backgroundColor: '#000000'
     },
     updates: {
-      fallbackToCacheTimeout: 0
+      url: "https://u.expo.dev/dd523feb-67b6-4175-beb8-464d51fd5afc"
+    },
+    runtimeVersion: {
+      policy: "sdkVersion"
     },
     assetBundlePatterns: ['**/*'],
     ios: {
-      supportsTablet: true
+      supportsTablet: false,
+      bundleIdentifier: "com.surfyogabeer.syb-app",
     },
     extra: {
       apiKey: process.env.API_KEY,
@@ -27,7 +31,10 @@ export default {
       projectId: process.env.PROJECT_ID,
       storageBucket: process.env.STORAGE_BUCKET,
       messagingSenderId: process.env.MESSAGING_SENDER_ID,
-      appId: process.env.APP_ID
+      appId: process.env.APP_ID,
+      eas: {
+        projectId: "dd523feb-67b6-4175-beb8-464d51fd5afc"
+      }
     }
   }
 };

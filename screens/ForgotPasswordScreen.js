@@ -78,7 +78,7 @@ export const ForgotPasswordScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.black,
     paddingHorizontal: 12
   },
   innercontainer: {
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 8,
-    backgroundColor: Colors.orange,
+    backgroundColor: Colors.blackSecondary,
     padding: 10,
     borderRadius: 8
   },

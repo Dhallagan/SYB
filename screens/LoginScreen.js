@@ -111,7 +111,7 @@ export const LoginScreen = ({ navigation }) => {
       {/* App info footer */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>
-          Expo Firebase Starter App (based on managed workflow)
+          {/* Expo Firebase Starter App (based on managed workflow) */}
         </Text>
       </View>
     </>
@@ -121,7 +121,7 @@ export const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.black,
     paddingHorizontal: 12
   },
   logoContainer: {
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     paddingTop: 20
   },
   footer: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.black,
     paddingHorizontal: 12,
     paddingBottom: 48,
     alignItems: 'center'
@@ -142,14 +142,14 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 14,
     fontWeight: '700',
-    color: Colors.orange
+    color: Colors.blackSecondary
   },
   button: {
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 8,
-    backgroundColor: Colors.orange,
+    backgroundColor: Colors.blackSecondary,
     padding: 10,
     borderRadius: 8
   },
