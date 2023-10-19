@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 export default {
   expo: {
-    name: 'SurfYogaBeer',
+    name: 'Surf Yoga Beer',
     slug: 'surfyogabeer',
     privacy: 'public',
     platforms: ['ios', 'android'],
@@ -15,15 +15,11 @@ export default {
       backgroundColor: '#000000'
     },
     updates: {
-      url: "https://u.expo.dev/dd523feb-67b6-4175-beb8-464d51fd5afc"
-    },
-    runtimeVersion: {
-      policy: "sdkVersion"
+      fallbackToCacheTimeout: 0
     },
     assetBundlePatterns: ['**/*'],
     ios: {
-      supportsTablet: false,
-      bundleIdentifier: "com.surfyogabeer.syb-app",
+      supportsTablet: true
     },
     extra: {
       apiKey: process.env.API_KEY,
@@ -35,6 +31,12 @@ export default {
       eas: {
         projectId: "dd523feb-67b6-4175-beb8-464d51fd5afc"
       }
-    }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/dd523feb-67b6-4175-beb8-464d51fd5afc"
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
   }
 };
