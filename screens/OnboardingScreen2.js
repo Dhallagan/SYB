@@ -10,7 +10,7 @@ export const OnboardingScreen2 = ({ route, navigation, onCompleted = null }) => 
 
 
   const handleEnableNotifications = async () => {
-    if (isSimulator) {
+    // if (isSimulator) {
       Alert.alert('Running on Simulator', 'Mocking enabling of notifications.');
       // Here, we're retrieving the current authenticated user. Adjust as necessary for your app's auth flow.
       const currentUser = auth.currentUser;
@@ -18,7 +18,6 @@ export const OnboardingScreen2 = ({ route, navigation, onCompleted = null }) => 
       // Validate if there is a logged-in user
       if (currentUser) {
         const userDocRef = doc(db, "user", currentUser.uid);
-          console.log('userDocRef', userDocRef);
   
           await updateDoc(userDocRef, {
             expoPushToken: 'expoPushToken[##########]', // The field in the user document where the Expo push token should be stored
@@ -32,43 +31,43 @@ export const OnboardingScreen2 = ({ route, navigation, onCompleted = null }) => 
         }
       }
 
-    } else {
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (status === 'granted') {
-        try {
-          // Get the token that uniquely identifies this device
-          const token = (await Notifications.getExpoPushTokenAsync()).data;
+    // } else {
+    //   const { status } = await Notifications.requestPermissionsAsync();
+    //   if (status === 'granted') {
+    //     try {
+    //       // Get the token that uniquely identifies this device
+    //       const token = (await Notifications.getExpoPushTokenAsync()).data;
   
-          // Here, we're retrieving the current authenticated user. Adjust as necessary for your app's auth flow.
-          const currentUser = auth.currentUser;
+    //       // Here, we're retrieving the current authenticated user. Adjust as necessary for your app's auth flow.
+    //       const currentUser = auth.currentUser;
   
-          if (currentUser) {
-            // Reference to the user's document. This path must match the one in your Firestore database.
-            const userDoc = doc(db, "user", currentUser.uid); // Adjust if your user collection is named differently
+    //       if (currentUser) {
+    //         // Reference to the user's document. This path must match the one in your Firestore database.
+    //         const userDoc = doc(db, "user", currentUser.uid); // Adjust if your user collection is named differently
   
-            // Set the user's push token
-            await updateDoc(userDoc, {
-              expoPushToken: token, // The field in the user document where the Expo push token should be stored
-            });
+    //         // Set the user's push token
+    //         await updateDoc(userDoc, {
+    //           expoPushToken: token, // The field in the user document where the Expo push token should be stored
+    //         });
   
-            // You might want to navigate away or do something else upon successful completion
-            // For example, marking the onboarding as complete
-            await AsyncStorage.setItem('isOnboarded', 'true');
-            if (onCompleted) {
-              onCompleted(); // Or some navigation action
-            }
-          } else {
-            throw new Error('No authenticated user found.');
-          }
-        } catch (error) {
-          console.error(error);
-          // Handle errors here
-          Alert.alert('Error', 'Could not enable notifications at this time.');
-        }
-      } else {
-        Alert.alert('Notifications permission not granted');
-      }
-    }
+    //         // You might want to navigate away or do something else upon successful completion
+    //         // For example, marking the onboarding as complete
+    //         await AsyncStorage.setItem('isOnboarded', 'true');
+    //         if (onCompleted) {
+    //           onCompleted(); // Or some navigation action
+    //         }
+    //       } else {
+    //         throw new Error('No authenticated user found.');
+    //       }
+    //     } catch (error) {
+    //       console.error(error);
+    //       // Handle errors here
+    //       Alert.alert('Error', 'Could not enable notifications at this time.');
+    //     }
+    //   } else {
+    //     Alert.alert('Notifications permission not granted');
+    //   }
+    // }
   };
   
 
