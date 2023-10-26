@@ -3,11 +3,11 @@ import { Text, StyleSheet } from 'react-native';
 import { Formik } from 'formik';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
 import { View, TextInput, Logo, Button, FormErrorMessage } from '../components';
-import { Images, Colors, auth } from '../config';
+import { Images, Colors, auth, db } from '../config';
 import { useTogglePasswordVisibility } from '../hooks';
 import { signupValidationSchema } from '../utils';
+import { doc, setDoc } from 'firebase/firestore';
 
 export const SignupScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState('');
@@ -21,13 +21,33 @@ export const SignupScreen = ({ navigation }) => {
     confirmPasswordVisibility
   } = useTogglePasswordVisibility();
 
-  const handleSignup = async values => {
-    const { email, password } = values;
-
-    createUserWithEmailAndPassword(auth, email, password).catch(error =>
-      setErrorState(error.message)
-    );
+  const handleSignup = async (values) => {
+    const { email, password, name } = values; // assuming 'name' is a field in your form
+  
+    try {
+      // Create the user
+      const response = await createUserWithEmailAndPassword(auth, email, password);
+      const userId = response.user.uid;
+      
+      // Construct user data to be stored
+      const userData = {
+        uid: userId,
+        name: null, // or provide a default value if 'name' isn't part of your form
+        onboarded: false, // setting the onboarded flag as false
+      };
+  
+      // Set the user data in Firestore
+      const userDocRef = doc(db, "user", userId); // "users" is your collection
+      await setDoc(userDocRef, userData);
+      // ... proceed with any logic you need post-signup, e.g., navigation
+  
+    } catch (error) {
+      console.error(error);
+      // Handle signup error
+      setErrorState(error.message);
+    }
   };
+  
 
   return (
     <View isSafe style={styles.container}>

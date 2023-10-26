@@ -1,4 +1,5 @@
-import 'dotenv/config';
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 export default {
   expo: {
@@ -15,28 +16,26 @@ export default {
       backgroundColor: '#000000'
     },
     updates: {
-      fallbackToCacheTimeout: 0
+      fallbackToCacheTimeout: 0,
+      url: "https://u.expo.dev/dd523feb-67b6-4175-beb8-464d51fd5afc"
+    },
+    runtimeVersion: {
+      policy: 'sdkVersion'
     },
     assetBundlePatterns: ['**/*'],
     ios: {
       supportsTablet: true
     },
     extra: {
-      apiKey: process.env.API_KEY,
-      authDomain: process.env.AUTH_DOMAIN,
-      projectId: process.env.PROJECT_ID,
-      storageBucket: process.env.STORAGE_BUCKET,
-      messagingSenderId: process.env.MESSAGING_SENDER_ID,
-      appId: process.env.APP_ID,
+      apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+      authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+      storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
       eas: {
         projectId: "dd523feb-67b6-4175-beb8-464d51fd5afc"
       }
-    },
-    "updates": {
-      "url": "https://u.expo.dev/dd523feb-67b6-4175-beb8-464d51fd5afc"
-    },
-    "runtimeVersion": {
-      "policy": "sdkVersion"
     },
   }
 };

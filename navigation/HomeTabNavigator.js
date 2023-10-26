@@ -4,6 +4,7 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { ItineraryScreen } from '../screens/ItineraryScreen';
 import { DirectoryScreen } from '../screens/DirectoryScreen';
 import { TimelineScreen } from '../screens/TimelineScreen';
+import { PhotosScreen } from '../screens/PhotosScreen';
 import { Icon } from '../components'
 // import Icon from 'react-native-vector-icons/Ionicons'; 
 
@@ -43,6 +44,17 @@ function HomeTabNavigator() {
             tabBarLabel: 'Timeline',
             tabBarIcon: ({ color, size }) => (
               <Icon name="calendar" color={'black'} size={size} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Photos"
+          component={PhotosScreen}
+          options={{
+            headerShown: false,
+            tabBarLabel: 'Photos',
+            tabBarIcon: ({ color, size }) => (
+              <Icon name="image-multiple-outline" color={'black'} size={size} />
             ),
           }}
         />

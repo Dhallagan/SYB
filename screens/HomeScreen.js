@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, Button, SafeAreaView, Text, Image, Dimensions } from 'react-native';
+import { View, StyleSheet, Button, SafeAreaView, Text, Image, Dimensions, Alert } from 'react-native';
 import { signOut } from 'firebase/auth';
 import { CustomHeader, Section } from '../components';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, auth } from '../config';
 import { itineraries } from '../mock/itinerary';
 
@@ -22,7 +22,8 @@ const imageWidth = screenWidth - 20; // account for padding; 10 from each side
 const imageHeight = imageWidth / aspectRatio;
 
 export const HomeScreen = () => {
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const onboardstatus = await AsyncStorage.removeItem('isOnboarded')
     signOut(auth).catch(error => console.log('Error logging out: ', error));
   };
   return (
