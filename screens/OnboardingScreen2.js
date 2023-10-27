@@ -3,73 +3,53 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { auth, db } from '../config'; // import based on your actual file structure
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, setDoc } from 'firebase/firestore';
+import { AuthenticationContext } from '../contexts/AuthenticationContext';
+import { useContext } from 'react';
 
-export const OnboardingScreen2 = ({ route, navigation, onCompleted = null }) => {
+export const OnboardingScreen2 = ({ route }) => {
   const isSimulator = !Device.isDevice;
+  const { refreshAuth } = useContext(AuthenticationContext);
 
-
-  const handleEnableNotifications = async () => {
-    // if (isSimulator) {
-      Alert.alert('Running on Simulator', 'Mocking enabling of notifications.');
-      // Here, we're retrieving the current authenticated user. Adjust as necessary for your app's auth flow.
+  const updateUserWithToken = async (token) => {
+    try {
       const currentUser = auth.currentUser;
-  
-      // Validate if there is a logged-in user
-      if (currentUser) {
-        const userDocRef = doc(db, "user", currentUser.uid);
-  
-          await updateDoc(userDocRef, {
-            expoPushToken: 'expoPushToken[##########]', // The field in the user document where the Expo push token should be stored
-          });
-
-        // You might want to navigate away or do something else upon successful completion
-        // For example, marking the onboarding as complete
-        await AsyncStorage.setItem('isOnboarded', 'true');
-        if (route.params.onCompleted) {
-          route.params.onCompleted(); // call the function passed from the parent component
-        }
+      if (!currentUser) {
+        throw new Error('No authenticated user found.');
       }
 
-    // } else {
-    //   const { status } = await Notifications.requestPermissionsAsync();
-    //   if (status === 'granted') {
-    //     try {
-    //       // Get the token that uniquely identifies this device
-    //       const token = (await Notifications.getExpoPushTokenAsync()).data;
+      const userDocRef = doc(db, "user", currentUser.uid); // Check your collection name if it's 'users' or 'user'
+      await setDoc(userDocRef, {
+        expoPushToken: token,
+        onboarded: true,
+      }, { merge: true }); // The merge option ensures we don't overwrite the entire document
   
-    //       // Here, we're retrieving the current authenticated user. Adjust as necessary for your app's auth flow.
-    //       const currentUser = auth.currentUser;
-  
-    //       if (currentUser) {
-    //         // Reference to the user's document. This path must match the one in your Firestore database.
-    //         const userDoc = doc(db, "user", currentUser.uid); // Adjust if your user collection is named differently
-  
-    //         // Set the user's push token
-    //         await updateDoc(userDoc, {
-    //           expoPushToken: token, // The field in the user document where the Expo push token should be stored
-    //         });
-  
-    //         // You might want to navigate away or do something else upon successful completion
-    //         // For example, marking the onboarding as complete
-    //         await AsyncStorage.setItem('isOnboarded', 'true');
-    //         if (onCompleted) {
-    //           onCompleted(); // Or some navigation action
-    //         }
-    //       } else {
-    //         throw new Error('No authenticated user found.');
-    //       }
-    //     } catch (error) {
-    //       console.error(error);
-    //       // Handle errors here
-    //       Alert.alert('Error', 'Could not enable notifications at this time.');
-    //     }
-    //   } else {
-    //     Alert.alert('Notifications permission not granted');
-    //   }
-    // }
+    } catch (error) {
+      console.error('Error updating user token:', error);
+      Alert.alert('Error', 'Could not update user settings at this time.');
+    }
   };
-  
+
+  const handleEnableNotifications = async () => {
+    let token = isSimulator ? 'simulator-dummy-token' : null; // Default dummy token for simulator
+
+    if (!isSimulator) {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Notifications permission not granted');
+        return;
+      }
+
+      const expoPushToken = await Notifications.getExpoPushTokenAsync({ projectId: process.env.EXPO_PUBLIC_PROJECT_ID });
+      token = expoPushToken.data;
+    } else {
+      Alert.alert('Running on Simulator', 'Mocking enabling of notifications.');
+    }
+
+    await updateUserWithToken(token);
+    await AsyncStorage.setItem('expoPushToken', token); // Store the token locally
+    await refreshAuth();
+  };
 
   return (
     <View style={styles.container}>

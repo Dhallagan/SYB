@@ -20,6 +20,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 export const OnboardingScreen1 = () => {
   const navigation = useNavigation();
   const [name, setName] = useState('Dylan');
+  const [isValid, setIsValid] = useState(true);
 
   const handleNextPress = async () => {
     if (!name.trim()) {
@@ -32,7 +33,6 @@ export const OnboardingScreen1 = () => {
         // Validate if there is a logged-in user
         if (currentUser) {
           const userDocRef = doc(db, "user", currentUser.uid);
-          console.log('userDocRef', userDocRef);
   
           // Set the 'name' field in the user's document
           await updateDoc(userDocRef, {

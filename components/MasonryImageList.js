@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MasonryList from 'react-native-masonry-list';
-import { Modal, View, Image, TouchableOpacity, Text } from 'react-native';
+import { Text } from 'react-native';
 import ViewPager from '@react-native-community/viewpager';
 
 export const MasonryImageList = ({ images }) => {

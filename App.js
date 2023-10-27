@@ -2,7 +2,7 @@ import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { signOut } from 'firebase/auth';
 import { RootNavigator } from './navigation/RootNavigator';
-import { AuthenticatedUserProvider } from './providers';
+import { AuthenticationProvider } from './contexts/AuthenticationContext';
 import { useFonts } from 'expo-font';
 import { Colors, auth } from './config';
 
@@ -18,11 +18,11 @@ const App = () => {
   }
 
   return (
-    <AuthenticatedUserProvider>
+    <AuthenticationProvider>
       <SafeAreaProvider>
         <RootNavigator />
       </SafeAreaProvider>
-    </AuthenticatedUserProvider>
+    </AuthenticationProvider>
   );
 };
 

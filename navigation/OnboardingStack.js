@@ -6,7 +6,7 @@ import { OnboardingScreen2 } from '../screens/OnboardingScreen2';
 
 const Stack = createStackNavigator();
 
-export const OnboardingStack = ({ onCompleted }) => {
+export const OnboardingStack = () => {
   return (
     <Stack.Navigator>
       {/* Use the component prop for the screens. This is the standard way of assigning screens. */}
@@ -20,7 +20,6 @@ export const OnboardingStack = ({ onCompleted }) => {
         name="OnboardingScreen2" 
         component={OnboardingScreen2} // Direct reference to the component
         options={{ headerShown: false }}
-        initialParams={{ onCompleted: onCompleted }} // Pass the `onCompleted` through initialParams
       />
       {/* More screens, if necessary... */}
     </Stack.Navigator>
