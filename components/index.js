@@ -7,6 +7,7 @@ import { FormErrorMessage } from './FormErrorMessage';
 import { LoadingIndicator } from './LoadingIndicator';
 import { CustomHeader } from './CustomHeader';
 import { Section } from './Section';
+import { Comment } from './Comment';
 
 export {
   View,
@@ -17,5 +18,6 @@ export {
   FormErrorMessage,
   LoadingIndicator,
   CustomHeader,
-  Section
+  Section,
+  Comment
 };

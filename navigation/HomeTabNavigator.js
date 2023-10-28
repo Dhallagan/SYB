@@ -6,6 +6,7 @@ import { DirectoryScreen } from '../screens/DirectoryScreen';
 import { TimelineScreen } from '../screens/TimelineScreen';
 import { PhotosScreen } from '../screens/PhotosScreen';
 import { Icon } from '../components'
+import { LostAndFoundScreen } from '../screens/LostAndFoundScreen';
 // import Icon from 'react-native-vector-icons/Ionicons'; 
 
 const Tab = createBottomTabNavigator();
@@ -26,22 +27,22 @@ function HomeTabNavigator() {
           }}
         />
         <Tab.Screen
-          name="Itinerary"
+          name="Itinerary1"
           component={ItineraryScreen}
           options={{
             headerShown: false,
-            tabBarLabel: 'Itinerary',
+            tabBarLabel: 'Itinerary1',
             tabBarIcon: ({ color, size }) => (
               <Icon name="calendar" color={'black'} size={size} />
             ),
           }}
         />
         <Tab.Screen
-          name="Timeline"
+          name="Itinerary2"
           component={TimelineScreen}
           options={{
             headerShown: false,
-            tabBarLabel: 'Timeline',
+            tabBarLabel: 'Itinerary2',
             tabBarIcon: ({ color, size }) => (
               <Icon name="calendar" color={'black'} size={size} />
             ),
@@ -53,6 +54,17 @@ function HomeTabNavigator() {
           options={{
             headerShown: false,
             tabBarLabel: 'Photos',
+            tabBarIcon: ({ color, size }) => (
+              <Icon name="image-multiple-outline" color={'black'} size={size} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Lost and Found"
+          component={LostAndFoundScreen}
+          options={{
+            headerShown: false,
+            tabBarLabel: 'Lost and Found',
             tabBarIcon: ({ color, size }) => (
               <Icon name="image-multiple-outline" color={'black'} size={size} />
             ),

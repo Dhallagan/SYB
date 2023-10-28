@@ -26,8 +26,9 @@ export const RootNavigator = () => {
   
   return (
     <NavigationContainer>
-      { user ? (isOnboarded ? <AppStack /> : <OnboardingStack />
-) : <AuthStack />}
+      { user ? (
+        isOnboarded ? <AppStack /> : <OnboardingStack />
+      ) : <AuthStack />}
     </NavigationContainer>
   );
 };

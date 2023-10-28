@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Button, SafeAreaView, Text, Image, Dimensions, Alert } from 'react-native';
+import { View, StyleSheet, Button, SafeAreaView, Text, Image, Dimensions, Alert, ScrollView } from 'react-native';
 import { signOut } from 'firebase/auth';
 import { CustomHeader, Section } from '../components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -27,7 +27,7 @@ export const HomeScreen = () => {
     signOut(auth).catch(error => console.log('Error logging out: ', error));
   };
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <CustomHeader
         title="ICELAND 2023"
         rightIcon={null}
@@ -57,9 +57,48 @@ export const HomeScreen = () => {
           />
         </View>
       </Section>
+
+      <Section title={'Day 1 Photo Drop'}>
+
+      <Text style={{ color: 'white', fontSize: 16, lineHeight: 22, fontWeight: 'bold' }}>PhotographyEnthusiast</Text>
+      <View style={styles.imageContainer}>
+        <Image 
+          source={{ uri: 'https://www.travelandleisure.com/thmb/1ZNi1aFJlzZpGXf0vOqdmj_U5VE=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/TAL-header-vik-reykjavik-iceland-summer-CRUISEICELAND0523-da5be9587e3a4cb1b5efa8ab0d8b6dc8.jpg' }} 
+          style={{ 
+            width: imageWidth, 
+            height: imageHeight,
+            alignSelf: 'stretch', 
+            resizeMode: 'cover',
+          }} 
+        />
+      </View>
+      <Text style={{ color: 'white', fontSize: 16, lineHeight: 22, paddingTop: 10 }}>
+        KennyF just dropped new photos this stunning view during my hike today! 📸 #NatureLover
+      </Text>
+      <Comment username="@Fred">
+        Absolutely stunning photos! Makes me want to pack my bags and head out now. 😍
+      </Comment>
+      <Comment username="@Johnny">
+        Remarkable capture! Which hiking trail was this?
+      </Comment>
+      <Comment username="@Beth">
+        Iceland never fails to amaze! Looking forward to more photos. 👏
+      </Comment>
+    </Section>
+
+    <Section title={''}>
+      <Text style={{ color: 'white', fontSize: 16, lineHeight: 22, fontWeight: 'bold' }}>@DylanH</Text>
+      <Text style={{ color: 'white', fontSize: 16, lineHeight: 22 }}>
+        Anyone wanna to to the town store?
+      </Text>
+      <Comment username="@Steph">
+        I'll go 😍
+      </Comment>
+
+    </Section>
       
       <Button title='Sign Out' onPress={handleLogout} />
-    </View>
+    </ScrollView>
   );
 };
 
@@ -73,5 +112,26 @@ const styles = StyleSheet.create({
     alignItems: 'center', // To align the image in the center of the container
     justifyContent: 'center', // Works with alignItems to center the image
   },
+  commentContainer: {
+    //borderTopWidth: 1,
+    //borderTopColor: 'white', // assuming white fits your design
+    padding: 10,
+    flexDirection: 'column', // change to 'row' if you want text right beside the username
+  },
+  commentUsername: {
+    color: 'white',
+    fontWeight: 'bold',
+    marginBottom: 5, // spacing between username and comment text
+  },
+  commentText: {
+    color: 'white',
+    lineHeight: 22,
+  },
 });
 
+export const Comment = ({username, children}) => (
+  <View style={styles.commentContainer}>
+    <Text style={styles.commentUsername}>{username}</Text>
+    <Text style={styles.commentText}>{children}</Text>
+  </View>
+);
