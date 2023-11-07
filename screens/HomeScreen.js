@@ -1,12 +1,67 @@
-import React from 'react';
+import React, {useState } from 'react';
 import { View, StyleSheet, Button, SafeAreaView, Text, Image, Dimensions, Alert, ScrollView } from 'react-native';
 import { signOut } from 'firebase/auth';
 import { CustomHeader, Section } from '../components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, auth } from '../config';
 import { itineraries } from '../mock/itinerary';
+import Post from '../components/Post';
+import CreatePostModal from '../components/CreatePostModal';
 
 const itinerary = itineraries[1]
+const posts =
+[
+  {
+    "username": "Bridgett Y",
+    "imageUri": "https://www.travelandleisure.com/thmb/1ZNi1aFJlzZpGXf0vOqdmj_U5VE=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/TAL-header-vik-reykjavik-iceland-summer-CRUISEICELAND0523-da5be9587e3a4cb1b5efa8ab0d8b6dc8.jpg",
+    "caption": "Just dropped new photos of this stunning view during my hike today! 📸 #NatureLover",
+    "reactions": {
+      "highFives": 12,
+    },
+    "comments": [
+      {
+        "username": "Fred",
+        "text": "Absolutely stunning photos! Makes me want to pack my bags and head out now. 😍"
+      },
+      {
+        "username": "Johnny",
+        "text": "Remarkable capture! Which hiking trail was this?"
+      },
+      {
+        "username": "Beth",
+        "text": "Iceland never fails to amaze! Looking forward to more photos. 👏"
+      }
+    ]
+  },
+  {
+    "username": "Mantas",
+    "imageUri": "https://d17t27i218htgr.cloudfront.net/rails/active_storage/blobs/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJaWt4T0RJM1lUTTBOeTAzWlROa0xUUmhPV1V0T1dFMk9TMHhaRFJoWkRGaFpUQmhNR0VHT2daRlZBPT0iLCJleHAiOm51bGwsInB1ciI6ImJsb2JfaWQifX0=--55fab09c6d4353196156b99fcd62677191c06a50/IMG_4503-Edit%20(1).jpg",
+    "caption": "🧘‍♀️ Yoga Class Announcement! 🧘‍♂️\n\nJoin us for a serene morning session by the pool.\n\n❗️ Tomorrow  8:30am\n📍 Villa Luna pool (image in next post)\n📌 Bring a towel and water",
+    "reactions": {
+      "highFives": 0,
+    },
+    "comments": [
+      {
+        "username": "Steph",
+        "text": "Love these morning sessions, can't wait!"
+      },
+      {
+        "username": "Bridgett Y",
+        "text": "The perfect way to start the day. See you there!"
+      }
+    ]
+  },
+  {
+    "username": "Dylan",
+    "imageUri": "",
+    "caption": "Has anyone seen some Nike Vapor Maxs by the hottub?",
+    "reactions": {
+      "highFives": 1,
+    },
+    "comments": []
+  }
+]
+
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -22,82 +77,49 @@ const imageWidth = screenWidth - 20; // account for padding; 10 from each side
 const imageHeight = imageWidth / aspectRatio;
 
 export const HomeScreen = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+
   const handleLogout = async () => {
     const onboardstatus = await AsyncStorage.removeItem('isOnboarded')
     signOut(auth).catch(error => console.log('Error logging out: ', error));
   };
+
+  const openCreatePostModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeCreatePostModal = () => {
+    setModalVisible(false);
+  };
+
   return (
     <ScrollView style={styles.container}>
       <CustomHeader
         title="ICELAND 2023"
-        rightIcon={null}
-        onRightPress={() => {
-          console.log('Right button pressed!');
+        rightIcon={{
+          name: 'add-circle-outline', // Assuming you have an icon named like this, if not, replace with your own
+          onPress: openCreatePostModal,
         }}
+        onRightPress={openCreatePostModal}
       />
 
-      {/* <Text style={{ fontSize: 48, padding: 5, margin: 5, color: 'white', alignSelf: 'center', fontFamily: 'California' }}>tODAY</Text> */}
-
-      <Section title={'tOMORROW'}>
-        <Text style={{ color: 'white', fontSize: 16, lineHeight: 22, fontWeight: 'bold' }}>YOGA CLASS</Text>
-        <Text style={{ color: 'white', fontSize: 16, lineHeight: 22 }}>❗️ Tomorrow @ 8:30am</Text>
-        <Text style={{ color: 'white', fontSize: 16, lineHeight: 22 }}>📍 Meet at at the Villa Luna pool (Shown in pic)</Text>
-        <Text style={{ color: 'white', fontSize: 16, lineHeight: 22 }}>📍 Bring a towel and water 💦🤘</Text>
-        <Text>tet</Text>
-        <View style={styles.imageContainer}>
-          <Image 
-            source={{ uri: 'https://d17t27i218htgr.cloudfront.net/rails/active_storage/blobs/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJaWt4T0RJM1lUTTBOeTAzWlROa0xUUmhPV1V0T1dFMk9TMHhaRFJoWkRGaFpUQmhNR0VHT2daRlZBPT0iLCJleHAiOm51bGwsInB1ciI6ImJsb2JfaWQifX0=--55fab09c6d4353196156b99fcd62677191c06a50/IMG_4503-Edit%20(1).jpg' }} 
-            style={{ 
-              width: imageWidth, 
-              height: imageHeight,
-              alignSelf: 'stretch', 
-              resizeMode: 'cover',
-              // margin: 10, // this ensures padding on both sides
-            }} 
-          />
-        </View>
-      </Section>
-
-      <Section title={'Day 1 Photo Drop'}>
-
-      <Text style={{ color: 'white', fontSize: 16, lineHeight: 22, fontWeight: 'bold' }}>PhotographyEnthusiast</Text>
-      <View style={styles.imageContainer}>
-        <Image 
-          source={{ uri: 'https://www.travelandleisure.com/thmb/1ZNi1aFJlzZpGXf0vOqdmj_U5VE=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/TAL-header-vik-reykjavik-iceland-summer-CRUISEICELAND0523-da5be9587e3a4cb1b5efa8ab0d8b6dc8.jpg' }} 
-          style={{ 
-            width: imageWidth, 
-            height: imageHeight,
-            alignSelf: 'stretch', 
-            resizeMode: 'cover',
-          }} 
+      {posts.map((post, index) => (
+        <Post 
+          key={index} // Make sure to add a unique key for each item in a list
+          username={post.username} 
+          imageUri={post.imageUri} 
+          caption={post.caption} 
+          comments={post.comments} 
+          highFives={post.reactions.highFives}
         />
-      </View>
-      <Text style={{ color: 'white', fontSize: 16, lineHeight: 22, paddingTop: 10 }}>
-        KennyF just dropped new photos this stunning view during my hike today! 📸 #NatureLover
-      </Text>
-      <Comment username="@Fred">
-        Absolutely stunning photos! Makes me want to pack my bags and head out now. 😍
-      </Comment>
-      <Comment username="@Johnny">
-        Remarkable capture! Which hiking trail was this?
-      </Comment>
-      <Comment username="@Beth">
-        Iceland never fails to amaze! Looking forward to more photos. 👏
-      </Comment>
-    </Section>
+      ))}
 
-    <Section title={''}>
-      <Text style={{ color: 'white', fontSize: 16, lineHeight: 22, fontWeight: 'bold' }}>@DylanH</Text>
-      <Text style={{ color: 'white', fontSize: 16, lineHeight: 22 }}>
-        Anyone wanna to to the town store?
-      </Text>
-      <Comment username="@Steph">
-        I'll go 😍
-      </Comment>
-
-    </Section>
-      
       <Button title='Sign Out' onPress={handleLogout} />
+
+      <CreatePostModal
+        visible={modalVisible}
+        onClose={closeCreatePostModal}
+      />
     </ScrollView>
   );
 };

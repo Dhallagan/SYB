@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Icon } from './Icon'
 
 export const CustomHeader = ({ title, onRightPress, rightIcon }) => {
   const insets = useSafeAreaInsets();
@@ -12,8 +13,9 @@ export const CustomHeader = ({ title, onRightPress, rightIcon }) => {
       <Text style={styles.title}>{title}</Text>
 
       {rightIcon ? (
-        <TouchableOpacity onPress={onRightPress} style={styles.button}>
-          <Image source={rightIcon} style={styles.icon} />
+        
+        <TouchableOpacity onPress={onRightPress}>
+          <Icon name="plus" color={'white'}  size={36} ></Icon>
         </TouchableOpacity>
       ) : (
         <View style={styles.logo}><></></View>
@@ -47,11 +49,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'California',
     flexGrow: 1
-  },
-  button: {
-    padding: 8,
-    position: 'absolute',
-    right: 10,
   },
   icon: {
     width: 20,
