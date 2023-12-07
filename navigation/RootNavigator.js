@@ -13,20 +13,20 @@ import { updateDoc } from 'firebase/firestore';
 import { useAuthentication } from '../contexts/AuthenticationContext';
 
 export const RootNavigator = () => {
-  const { loading, isOnboarded, error, user } = useAuthentication();
+  const { loading, isOnboarded, error, user, identity } = useAuthentication();
 
   if (loading ) {
     return <LoadingIndicator />;
   }
 
   if (error) {
-
+    console.log(error)
     return <Text>Error loading data!</Text>;
   }
   
   return (
     <NavigationContainer>
-      { user ? (
+      { identity ? (
         isOnboarded ? <AppStack /> : <OnboardingStack />
       ) : <AuthStack />}
     </NavigationContainer>

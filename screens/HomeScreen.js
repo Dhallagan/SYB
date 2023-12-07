@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Button, SafeAreaView, Text, Image, Dimensions, Alert, ScrollView } from 'react-native';
 import { signOut } from 'firebase/auth';
 import { CustomHeader, Section } from '../components';
@@ -7,60 +7,12 @@ import { Colors, auth } from '../config';
 import { itineraries } from '../mock/itinerary';
 import Post from '../components/Post';
 import CreatePostModal from '../components/CreatePostModal';
+import { getFirestore, collection, query, onSnapshot, doc } from 'firebase/firestore';
+
+import { useAuthentication } from '../contexts/AuthenticationContext';
+
 
 const itinerary = itineraries[1]
-const posts =
-[
-  {
-    "username": "Bridgett Y",
-    "imageUri": "https://www.travelandleisure.com/thmb/1ZNi1aFJlzZpGXf0vOqdmj_U5VE=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/TAL-header-vik-reykjavik-iceland-summer-CRUISEICELAND0523-da5be9587e3a4cb1b5efa8ab0d8b6dc8.jpg",
-    "caption": "Just dropped new photos of this stunning view during my hike today! 📸 #NatureLover",
-    "reactions": {
-      "highFives": 12,
-    },
-    "comments": [
-      {
-        "username": "Fred",
-        "text": "Absolutely stunning photos! Makes me want to pack my bags and head out now. 😍"
-      },
-      {
-        "username": "Johnny",
-        "text": "Remarkable capture! Which hiking trail was this?"
-      },
-      {
-        "username": "Beth",
-        "text": "Iceland never fails to amaze! Looking forward to more photos. 👏"
-      }
-    ]
-  },
-  {
-    "username": "Mantas",
-    "imageUri": "https://d17t27i218htgr.cloudfront.net/rails/active_storage/blobs/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJaWt4T0RJM1lUTTBOeTAzWlROa0xUUmhPV1V0T1dFMk9TMHhaRFJoWkRGaFpUQmhNR0VHT2daRlZBPT0iLCJleHAiOm51bGwsInB1ciI6ImJsb2JfaWQifX0=--55fab09c6d4353196156b99fcd62677191c06a50/IMG_4503-Edit%20(1).jpg",
-    "caption": "🧘‍♀️ Yoga Class Announcement! 🧘‍♂️\n\nJoin us for a serene morning session by the pool.\n\n❗️ Tomorrow  8:30am\n📍 Villa Luna pool (image in next post)\n📌 Bring a towel and water",
-    "reactions": {
-      "highFives": 0,
-    },
-    "comments": [
-      {
-        "username": "Steph",
-        "text": "Love these morning sessions, can't wait!"
-      },
-      {
-        "username": "Bridgett Y",
-        "text": "The perfect way to start the day. See you there!"
-      }
-    ]
-  },
-  {
-    "username": "Dylan",
-    "imageUri": "",
-    "caption": "Has anyone seen some Nike Vapor Maxs by the hottub?",
-    "reactions": {
-      "highFives": 1,
-    },
-    "comments": []
-  }
-]
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -77,7 +29,61 @@ const imageWidth = screenWidth - 20; // account for padding; 10 from each side
 const imageHeight = imageWidth / aspectRatio;
 
 export const HomeScreen = () => {
+  const [posts, setPosts] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const { user } = useAuthentication(); // Get the authenticated user from context
+
+
+  const [commentsUnsubscribes, setCommentsUnsubscribes] = useState([]);
+
+useEffect(() => {
+  const db = getFirestore();
+  const postsQuery = query(collection(db, "posts"));
+  const unsubscribePosts = onSnapshot(postsQuery, (querySnapshot) => {
+    const postsArray = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+      comments: [] // Initialize comments as an empty array
+    }));
+
+    // Update state immediately with posts without comments
+    setPosts(postsArray);
+
+    // Create a new array for unsubscribe functions
+    const newCommentsUnsubscribes = [];
+
+    // Now, set up comment subscriptions for each post
+    postsArray.forEach((post, index) => {
+      const commentsRef = collection(db, "posts", post.id, "comments");
+      const unsubscribeComments = onSnapshot(commentsRef, (commentsSnapshot) => {
+        const newComments = commentsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+
+        // Use functional update to ensure we have the latest state
+        setPosts(currentPosts => {
+          const newPosts = [...currentPosts];
+          newPosts[index] = { ...newPosts[index], comments: newComments };
+          return newPosts;
+        });
+      });
+
+      // Push the unsubscribe function for the current post's comments into the array
+      newCommentsUnsubscribes.push(unsubscribeComments);
+    });
+
+    // Update the state with the new unsubscribe functions
+    setCommentsUnsubscribes(newCommentsUnsubscribes);
+  });
+
+  // Cleanup function
+  return () => {
+    unsubscribePosts();
+    commentsUnsubscribes.forEach(unsubscribe => unsubscribe());
+  };
+}, []);
+  
 
   const handleLogout = async () => {
     const onboardstatus = await AsyncStorage.removeItem('isOnboarded')
@@ -91,26 +97,30 @@ export const HomeScreen = () => {
   const closeCreatePostModal = () => {
     setModalVisible(false);
   };
+  console.log('1',posts[0])
 
   return (
+    <View style={{ flex: 1, backgroundColor: '#000' }}>
+    <CustomHeader
+      title="ICELAND 2023"
+      rightIcon={{
+        name: 'add-circle-outline', // Assuming you have an icon named like this, if not, replace with your own
+        onPress: openCreatePostModal,
+      }}
+      onRightPress={openCreatePostModal}
+    />
     <ScrollView style={styles.container}>
-      <CustomHeader
-        title="ICELAND 2023"
-        rightIcon={{
-          name: 'add-circle-outline', // Assuming you have an icon named like this, if not, replace with your own
-          onPress: openCreatePostModal,
-        }}
-        onRightPress={openCreatePostModal}
-      />
+
 
       {posts.map((post, index) => (
         <Post 
           key={index} // Make sure to add a unique key for each item in a list
+          postId={post.id}
           username={post.username} 
-          imageUri={post.imageUri} 
+          imageUri={post.mediaUrl} 
           caption={post.caption} 
           comments={post.comments} 
-          highFives={post.reactions.highFives}
+          highFives={post.reactions?.highFives}
         />
       ))}
 
@@ -119,8 +129,10 @@ export const HomeScreen = () => {
       <CreatePostModal
         visible={modalVisible}
         onClose={closeCreatePostModal}
+        username={user ? user.name : "Anonymous"} // Assuming the username is stored in the displayName field
       />
     </ScrollView>
+    </View>
   );
 };
 

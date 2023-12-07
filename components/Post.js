@@ -1,9 +1,14 @@
 // Post.js
-import React from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import React, {useState} from 'react';
+import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity, TextInput, Button } from 'react-native';
 import { Comment } from './Comment'; // Make sure this is properly imported from its path
 import { formatDistanceToNowStrict } from "date-fns";
 import { Avatar } from './Avatar'
+import { db } from '../config/firebase'; // Make sure this is the correct path to your firebase config
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { Icon } from './Icon'
+import { useAuthentication } from '../contexts/AuthenticationContext';
+
 
 // You can define a dark theme color scheme here or import it from your 'Colors' config
 const darkThemeColors = {
@@ -45,10 +50,10 @@ const PostImage = ({ imageUri }) => {
     )
 }
 
-const PostFooter = ({ username, highFives, caption }) => {
+const PostFooter = ({ username, highFives = 0, caption }) => {
     return (
         <>
-                    <View style={{marginTop: '5px'}}>
+            <View style={{marginTop: '5px'}}>
                 <Caption username={username} caption={caption}/>
             </View>
             <View style={styles.topContainer}>
@@ -66,8 +71,8 @@ const PostFooter = ({ username, highFives, caption }) => {
                         <Text style={{ color: "#fff", fontSize: 14 }}></Text>
                     )}
                 </TouchableOpacity>
+                
             </View>
-
         </>
     )
 }
@@ -75,24 +80,82 @@ const PostFooter = ({ username, highFives, caption }) => {
 const Caption = ({ username, caption}) => {
     return (
         <View style={styles.textContainer}>
-            {/* <Text style={styles.username}>{username}</Text> */}
+            <Text style={styles.username}>{username}</Text>
             <Text style={styles.caption}>{caption}</Text>
         </View>
     )
 }
 
-const Post = ({ username, imageUri, caption, comments, highFives }) => {
+const Post = ({ postId, username, imageUri, caption, comments = [], highFives = 0 }) => {
+  const { user } = useAuthentication(); // Get the authenticated user from context
+  const [newComment, setNewComment] = useState('');
+  // State to determine if all comments are shown
+  const [showAllComments, setShowAllComments] = useState(false);
+  // Number of comments to show initially
+  const initialCommentCount = 3;
+  // Comments to display based on state
+  const displayedComments = showAllComments ? comments : comments.slice(0, initialCommentCount);
+  // Toggle the state to show all comments
+  const toggleCommentsDisplay = () => {
+    setShowAllComments(!showAllComments);
+  };
+
+  const handleCommentSubmit = async () => {
+    if (newComment.trim() === '') return; // Don't submit if the comment is empty
+
+    try {
+      // Reference to the Firestore comments collection
+      // Assuming you have a subcollection 'comments' under each 'posts' document
+      const commentsRef = collection(db, 'posts', postId, 'comments');
+      
+      // Add a new document in the comments collection
+      await addDoc(commentsRef, {
+        text: newComment,
+        createdAt: serverTimestamp(), // Use server timestamp for consistency
+        username: user ? user.name : "Anonymous", // Replace with current user's username
+        // Add any other comment related fields here
+      });
+
+      // Reset the comment input
+      setNewComment('');
+    } catch (error) {
+      console.error("Error adding comment: ", error);
+    }
+  };
+  
   return (
     <View style={styles.postContainer}>
       <PostHeader username={username} createdAt={new Date()} />
-        <PostImage imageUri={imageUri} />
-        <PostFooter username={username} highFives={highFives} caption={caption} />
+      <PostImage imageUri={imageUri} />
+      <PostFooter username={username} highFives={highFives} caption={caption} />
         
-      {/* <View style={styles.commentsContainer}>
-        {comments.map((comment, index) => (
-          <Comment key={index} username={comment.username} text={comment.text} />
+      {/* Comments Section */}
+      <View style={styles.commentsContainer}>
+        {displayedComments.map((comment, index) => (
+          <Comment key={comment.id} username={comment.username} text={comment.text} />
         ))}
-      </View> */}
+
+        {/* 'View more comments' button */}
+        {comments.length > initialCommentCount && !showAllComments && (
+          <TouchableOpacity onPress={toggleCommentsDisplay}>
+            <Text style={styles.viewMoreCommentsText}>View more comments</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Comment Input Section */}
+      <View style={styles.commentInputContainer}>
+        <TextInput
+          style={styles.commentInput}
+          placeholder="Add a comment..."
+          value={newComment}
+          onChangeText={text => setNewComment(text)}
+          placeholderTextColor={darkThemeColors.subtext}
+        />
+        <TouchableOpacity onPressIn={handleCommentSubmit}>
+          <Icon name="send" color={darkThemeColors.text} size={20}  />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -103,7 +166,7 @@ const imageHeight = imageWidth * 9 / 16; // Assuming a 16:9 aspect ratio for sim
 
 const styles = StyleSheet.create({
   postContainer: {
-    backgroundColor: "#111",
+    // backgroundColor: "#111",
     overflow: 'hidden',
     marginBottom: 20,
     shadowColor: '#000',
@@ -124,6 +187,7 @@ const styles = StyleSheet.create({
   leftHeader: {
     flex: 0,
     flexDirection: "row",
+    padding: 10
   },
   rightHeader: {
     flex: 1,
@@ -146,6 +210,7 @@ const styles = StyleSheet.create({
     color: darkThemeColors.text,
     fontSize: 16,
     fontWeight: 'bold',
+    paddingBottom: 5
   },
   postImage: {
     width: imageWidth,
@@ -164,7 +229,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   commentsContainer: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
   },
   divider: {
     marginHorizontal: 10,
@@ -181,7 +246,28 @@ const styles = StyleSheet.create({
     color: "#fff",
     paddingHorizontal: 10,
     paddingVertical: 5,
-  }
+  },
+  commentInputContainer: {
+    // borderTopColor: darkThemeColors.border,
+    borderTopWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+  },
+  commentInput: {
+    flex: 1,
+    marginRight: 10,
+    padding: 10,
+    backgroundColor: '#2C2C2C', // Slightly lighter than the background for visibility
+    color: darkThemeColors.text,
+    borderRadius: 20,
+  },
+  viewMoreCommentsText: {
+    color: darkThemeColors.text,
+    fontSize: 14,
+    padding: 8,
+    textAlign: 'center'
+  },
 });
 
 export default Post;

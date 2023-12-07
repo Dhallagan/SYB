@@ -5,6 +5,7 @@ import { RootNavigator } from './navigation/RootNavigator';
 import { AuthenticationProvider } from './contexts/AuthenticationContext';
 import { useFonts } from 'expo-font';
 import { Colors, auth } from './config';
+import { TripProvider } from './contexts/TripContext';
 
 const App = () => {
    /* @info */ const [loaded] = useFonts({
@@ -19,9 +20,11 @@ const App = () => {
 
   return (
     <AuthenticationProvider>
-      <SafeAreaProvider>
-        <RootNavigator />
-      </SafeAreaProvider>
+      <TripProvider>
+        <SafeAreaProvider>
+          <RootNavigator />
+        </SafeAreaProvider>
+      </TripProvider>
     </AuthenticationProvider>
   );
 };

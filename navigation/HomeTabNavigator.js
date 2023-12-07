@@ -7,6 +7,7 @@ import { TimelineScreen } from '../screens/TimelineScreen';
 import { PhotosScreen } from '../screens/PhotosScreen';
 import { Icon } from '../components'
 import { LostAndFoundScreen } from '../screens/LostAndFoundScreen';
+import { SettingsScreen } from '../screens/SettingsScreen'
 // import Icon from 'react-native-vector-icons/Ionicons'; 
 
 const Tab = createBottomTabNavigator();
@@ -26,7 +27,7 @@ function HomeTabNavigator() {
             ),
           }}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="Itinerary1"
           component={ItineraryScreen}
           options={{
@@ -36,7 +37,7 @@ function HomeTabNavigator() {
               <Icon name="calendar" color={'black'} size={size} />
             ),
           }}
-        />
+        /> */}
         <Tab.Screen
           name="Itinerary2"
           component={TimelineScreen}
@@ -48,7 +49,7 @@ function HomeTabNavigator() {
             ),
           }}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="Photos"
           component={PhotosScreen}
           options={{
@@ -58,8 +59,8 @@ function HomeTabNavigator() {
               <Icon name="image-multiple-outline" color={'black'} size={size} />
             ),
           }}
-        />
-        <Tab.Screen
+        /> */}
+        {/* <Tab.Screen
           name="Lost and Found"
           component={LostAndFoundScreen}
           options={{
@@ -69,7 +70,7 @@ function HomeTabNavigator() {
               <Icon name="image-multiple-outline" color={'black'} size={size} />
             ),
           }}
-        />
+        /> */}
         <Tab.Screen
           name="Directory"
           component={DirectoryScreen}
@@ -81,6 +82,17 @@ function HomeTabNavigator() {
             ),
           }}
         />
+        {/* <Tab.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            headerShown: false,
+            tabBarLabel: 'Settings',
+            tabBarIcon: ({ color, size }) => (
+              <Icon name="setting" color={'black'} size={size} />
+            ),
+          }}
+        /> */}
       </Tab.Navigator>
 
   );

@@ -11,10 +11,10 @@ export const Comment = ({ username, text, children }) => (
 const styles = StyleSheet.create({
   commentContainer: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#343434', // a slightly lighter dark border for subtle separation
-    paddingVertical: 8,
+    // borderBottomColor: '#343434', // a slightly lighter dark border for subtle separation
+    paddingVertical: 4,
     paddingHorizontal: 12,
-    backgroundColor: '#1E1E1E', // a dark background for the comments
+    // backgroundColor: '#1E1E1E', // a dark background for the comments
     flexDirection: 'row', // align username and comment text in a row
     alignItems: 'flex-start', // align items to the start of the flex direction
   },
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   commentText: {
     flex: 1, // take the remaining space for the comment text
     color: '#BBBBBB', // a lighter gray to contrast against the dark background
-    lineHeight: 20, // adjusted line height for better readability
+    lineHeight: 16, // adjusted line height for better readability
     fontSize: 14, // standard font size for the text
   },
   // ... other styles ...

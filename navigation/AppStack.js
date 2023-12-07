@@ -10,7 +10,7 @@ const Stack = createStackNavigator();
 export const AppStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name='Home' component={HomeTabNavigator} options={{ headerShown: false }}/>
+      <Stack.Screen name='HomeTab' component={HomeTabNavigator} options={{ headerShown: false }}/>
       <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );

@@ -17,6 +17,7 @@ export const AuthenticationProvider = ({ children }) => {
   const [combinedLoading, setCombinedLoading] = useState(true);
   const [isOnboarded, setIsOnboarded] = useState(false);
   const [user, setUser] = useState(null);
+  const [identity, setIdentity] = useState(null);
   const [error, setError] = useState(null);
 
   const refreshAuth = useCallback(async () => {
@@ -33,8 +34,9 @@ export const AuthenticationProvider = ({ children }) => {
             const userDoc = await getDoc(doc(db, 'user', authUser.uid));
             if (userDoc.exists()) {
               const userData = userDoc.data();
-              setIsOnboarded(userData.onboarded); // Fetching 'onboarded' status from Firestore
-              setUser(authUser); // Set authenticated user
+              setIsOnboarded(userData.onboarded); // Fetching 'onboarded' status from Firestores
+              setUser(userData);
+              setIdentity(authUser); // Set authenticated user
             } else {
               // Handle a scenario where the user document might not exist
               setError('User document does not exist.');
@@ -64,6 +66,7 @@ export const AuthenticationProvider = ({ children }) => {
         loading,
         isOnboarded,
         user, // This is the Firebase user
+        identity,
         error, // Error from GraphQL or Firebase or both
         refreshAuth,
       }}

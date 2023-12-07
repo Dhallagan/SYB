@@ -2,10 +2,16 @@ import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker'; // Import from expo-image-picker instead
+// Import Firebase services from your config file
+import { db, storage } from '../config/firebase';
+import { ref as storageRef, getStorage, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
-const CreatePostModal = ({ visible, onClose }) => {
+
+const CreatePostModal = ({ visible, onClose, username }) => {
   const [caption, setCaption] = useState('');
   const [image, setImage] = useState(null);
+  const [isVideo, setIsVideo] = useState(false); // Add this line
 
   // Request permission to access the media library
   const getPermission = async () => {
@@ -15,50 +21,101 @@ const CreatePostModal = ({ visible, onClose }) => {
     }
   };
 
-  // Handle choosing photo from the library
-  const handleChoosePhoto = async () => {
+  // // Handle choosing photo from the library
+  // const handleChoosePhoto = async () => {
+  //   try {
+  //     await getPermission();
+  //     let result = await ImagePicker.launchImageLibraryAsync({
+  //       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //       allowsEditing: true,
+  //       aspect: [4, 3],
+  //       quality: 1,
+  //       // noData: true,
+  //     });
+
+  //     if (!result.cancelled) {
+  //       console.log('Selected image URI:', result.uri);
+  //       setImage(result.assets[0].uri);
+  //     }
+  //   } catch (error) {
+  //     Alert.alert('Error', 'An error occurred while accessing the library.');
+  //     console.log(error);
+  //   }
+  // };
+
+  // // Handle taking new photo using camera
+  // const handleTakePhoto = async () => {
+  //   await getPermission();
+  //   let result = await ImagePicker.launchCameraAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //     allowsEditing: true,
+  //     aspect: [4, 3],
+  //     quality: 1,
+  //     saveToPhotos: true,
+  //   });
+
+  //   if (!result.cancelled) {
+  //     console.log(result);
+  //     setImage(result.uri);
+  //   }
+  // };
+
+  const handleChooseMedia = async () => {
     try {
-      await getPermission();
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-        // noData: true,
-      });
+        await getPermission();
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All, // Changed to All to include videos
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
 
-      if (!result.cancelled) {
-        setImage(result.assets[0].uri);
-      }
+        if (!result.cancelled) {
+          console.log('Selected media URI:', result.assets[0].uri);
+            setImage(result.assets[0].uri);
+            setIsVideo(result.type === 'video'); // Set a flag if the selected media is a video
+        }
     } catch (error) {
-      Alert.alert('Error', 'An error occurred while accessing the library.');
-      console.log(error);
+        Alert.alert('Error', 'An error occurred while accessing the library.');
+        console.log(error);
     }
   };
 
-  // Handle taking new photo using camera
-  const handleTakePhoto = async () => {
-    await getPermission();
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-      saveToPhotos: true,
-    });
+  const uploadMediaToFirebase = async (mediaUri, isVideo) => {
+    const response = await fetch(mediaUri);
+    const blob = await response.blob();
+    const fileRef = storageRef(storage, `uploads/${new Date().toISOString()}.${isVideo ? 'mp4' : 'jpg'}`);
+    await uploadBytes(fileRef, blob);
+    return await getDownloadURL(fileRef);
+};
 
-    if (!result.cancelled) {
-      console.log(result);
-      setImage(result.uri);
-    }
-  };
+const createPostInFirestore = async (caption, mediaUrl, isVideo) => {
+    const post = {
+      username, // Include the username in the post object
+      caption,
+      mediaUrl,
+      mediaType: isVideo ? 'video' : 'image',
+      createdAt: serverTimestamp(),
+    };
+    await addDoc(collection(db, 'posts'), post);
+};
 
   // Handle the submit action
-  const handleSubmit = () => {
-    console.log('Submit', { caption, image });
-    setCaption('');
-    setImage(null);
-    onClose();
+  const handleSubmit = async () => {
+    try {
+        if (image) {
+            const mediaUrl = await uploadMediaToFirebase(image, isVideo);
+            await createPostInFirestore(caption, mediaUrl, isVideo);
+        } else {
+            // Handle case where no media is selected
+            console.log('No media selected');
+        }
+        setCaption('');
+        setImage(null);
+        onClose();
+    } catch (error) {
+        console.error('Error creating post:', error);
+    }
   };
 
   return (
@@ -73,20 +130,23 @@ const CreatePostModal = ({ visible, onClose }) => {
               <Text style={{color: 'white', fontSize: 24, fontWeight: 800, fontFamily: 'California', paddingTop: 10  }}>New Post</Text>
             </View>
 
-
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <TouchableOpacity onPress={handleSubmit} style={styles.closeButton}>
               <Text style={{color: 'gray', fontSize: 20, fontWeight: 800  }}>Share</Text>
             </TouchableOpacity>
           </View>
           
           <View style={{flex: 0, flexDirection: 'row' }}>
+            <TouchableOpacity onPress={handleChooseMedia} style={styles.button}>
+                <Text style={{ color: 'white' }}>Choose Media</Text>
+            </TouchableOpacity>
+{/*             
             <TouchableOpacity onPress={handleChoosePhoto} style={styles.button}>
               <Text style={{color: 'white' }}>Choose Photo</Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={handleTakePhoto} style={styles.button}>
               <Text  style={{color: 'white' }}>Take Photo</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           <TextInput
