@@ -14,8 +14,14 @@ const Tab = createBottomTabNavigator();
 
 function HomeTabNavigator() {
   return (
-
-      <Tab.Navigator>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarStyle: {
+            backgroundColor: '#000',
+            // ... any other styling you want to add ...
+          },
+        }}
+      >
         <Tab.Screen
           name="Home"
           component={HomeScreen}
@@ -23,7 +29,7 @@ function HomeTabNavigator() {
             headerShown: false,
             tabBarLabel: 'Home',
             tabBarIcon: ({ color, size }) => (
-              <Icon name="home" color={'black'} size={size} />
+              <Icon name="home" color={'white'} size={size} />
             ),
           }}
         />
@@ -45,7 +51,7 @@ function HomeTabNavigator() {
             headerShown: false,
             tabBarLabel: 'Itinerary2',
             tabBarIcon: ({ color, size }) => (
-              <Icon name="calendar" color={'black'} size={size} />
+              <Icon name="calendar" color={'white'} size={size} />
             ),
           }}
         />
@@ -78,7 +84,7 @@ function HomeTabNavigator() {
             headerShown: false,
             tabBarLabel: 'Directory',
             tabBarIcon: ({ color, size }) => (
-              <Icon name="book" color={'black'} size={size} />
+              <Icon name="book" color={'white'} size={size} />
             ),
           }}
         />

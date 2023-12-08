@@ -67,7 +67,7 @@ const CreatePostModal = ({ visible, onClose, username }) => {
             mediaTypes: ImagePicker.MediaTypeOptions.All, // Changed to All to include videos
             allowsEditing: true,
             aspect: [4, 3],
-            quality: 1,
+            quality: 0,
         });
 
         if (!result.cancelled) {
@@ -75,6 +75,8 @@ const CreatePostModal = ({ visible, onClose, username }) => {
             setImage(result.assets[0].uri);
             setIsVideo(result.type === 'video'); // Set a flag if the selected media is a video
         }
+        console.log('handleChooseMedia - Result:', result);
+
     } catch (error) {
         Alert.alert('Error', 'An error occurred while accessing the library.');
         console.log(error);
@@ -82,10 +84,14 @@ const CreatePostModal = ({ visible, onClose, username }) => {
   };
 
   const uploadMediaToFirebase = async (mediaUri, isVideo) => {
+    console.log('uploadMediaToFirebase - Start, Media URI:', mediaUri, 'Is Video:', isVideo);
+
     const response = await fetch(mediaUri);
+    
     const blob = await response.blob();
     const fileRef = storageRef(storage, `uploads/${new Date().toISOString()}.${isVideo ? 'mp4' : 'jpg'}`);
     await uploadBytes(fileRef, blob);
+    
     return await getDownloadURL(fileRef);
 };
 
@@ -104,7 +110,9 @@ const createPostInFirestore = async (caption, mediaUrl, isVideo) => {
   const handleSubmit = async () => {
     try {
         if (image) {
+            console.log('handleSubmit:Upload photo', image)
             const mediaUrl = await uploadMediaToFirebase(image, isVideo);
+            console.log('handleSubmit:Create record')
             await createPostInFirestore(caption, mediaUrl, isVideo);
         } else {
             // Handle case where no media is selected

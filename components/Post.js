@@ -138,7 +138,7 @@ const Post = ({ postId, username, imageUri, caption, comments = [], highFives = 
         {/* 'View more comments' button */}
         {comments.length > initialCommentCount && !showAllComments && (
           <TouchableOpacity onPress={toggleCommentsDisplay}>
-            <Text style={styles.viewMoreCommentsText}>View more comments</Text>
+            <Text style={styles.viewMoreCommentsText}>View all comments</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     color: darkThemeColors.text,
     fontSize: 14,
     padding: 8,
-    textAlign: 'center'
+    textAlign: 'left'
   },
 });
 
